@@ -1,0 +1,5 @@
+# Ignore python cache and heavy local binaries if needed
+__pycache__/
+*.pkl
+*.xtc
+*.gro

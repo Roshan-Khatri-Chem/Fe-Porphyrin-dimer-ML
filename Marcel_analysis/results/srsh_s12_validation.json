@@ -1,0 +1,20 @@
+{
+  "singlet_HOMO": {
+    "energy_eV": -5.109171401997401,
+    "r_log_S12_vs_qchem_truth_slater111": 0.2875569881295367,
+    "r_log_S12_vs_logJ_slater": 0.7339066929251137
+  },
+  "cation_alpha_SOMO": {
+    "energy_eV": -5.871629904734,
+    "r_log_S12_vs_qchem_truth_slater111": 0.29426668486981405,
+    "r_log_S12_vs_logJ_slater": 0.7774361749787906
+  },
+  "b3lyp_baseline": {
+    "r_log_S12_vs_qchem_truth_slater111": 0.291923559872528,
+    "r_log_S12_vs_logJ_slater": 0.7508945817814414
+  },
+  "qchem_truth": {
+    "r_log_S12_vs_logJ_slater": 0.9524505369915526
+  },
+  "n_valid_slater": 110
+}

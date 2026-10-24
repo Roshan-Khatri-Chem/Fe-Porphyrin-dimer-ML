@@ -1,0 +1,2 @@
+In this files, I have used lo10_Coupling from alpha_shfit_808_dataset files, where log10_Coupling already have added. But in meV conversion did not subtract these alpha_shift values. 
+The final results and plot has including alpha. no substraction of alphain log sacle R2 and mae

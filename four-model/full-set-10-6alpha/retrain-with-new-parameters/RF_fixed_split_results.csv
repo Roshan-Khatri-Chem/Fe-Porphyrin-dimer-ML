@@ -1,0 +1,6 @@
+Model,Fold,Train_MAE,Train_R2,Val_MAE,Val_R2,Test_MAE,Test_R2,Best_Params
+RF,1,0.21700059982242964,0.9372641662647214,0.6493616872697864,0.4682131428938714,0.5472047810927859,0.5750967088740744,"{'max_depth': 15, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 800}"
+RF,2,0.2257534192470903,0.9357523408405509,0.5939042749887958,0.517335506527433,0.5614560466949189,0.5930788481428075,"{'max_depth': 15, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 800}"
+RF,3,0.22085091927968348,0.9363026685384214,0.6298489633161112,0.5175644987515505,0.5699786466920522,0.5805087112625595,"{'max_depth': 15, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 800}"
+RF,4,0.2197340845398117,0.9369770282475918,0.5730203730507176,0.5272597847156506,0.5363290081569164,0.598110294210502,"{'max_depth': 15, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 800}"
+RF,5,0.22795852094337893,0.9323833606799318,0.5484024211443709,0.6091709091836957,0.5373623653376212,0.6080097015275032,"{'max_depth': 15, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 800}"

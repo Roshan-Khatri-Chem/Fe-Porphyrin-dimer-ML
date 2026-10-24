@@ -1,0 +1,14 @@
+file,rows,description
+full_clean_dataset.csv,741,All cleaned high-coupling rows
+train_fixed.csv,592,Fixed high-coupling training set
+test_fixed.csv,149,Fixed high-coupling test set
+fold_1_train.csv,473,Fold 1 training subset
+fold_1_val.csv,119,Fold 1 validation subset
+fold_2_train.csv,473,Fold 2 training subset
+fold_2_val.csv,119,Fold 2 validation subset
+fold_3_train.csv,474,Fold 3 training subset
+fold_3_val.csv,118,Fold 3 validation subset
+fold_4_train.csv,474,Fold 4 training subset
+fold_4_val.csv,118,Fold 4 validation subset
+fold_5_train.csv,474,Fold 5 training subset
+fold_5_val.csv,118,Fold 5 validation subset

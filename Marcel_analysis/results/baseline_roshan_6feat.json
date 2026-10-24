@@ -1,0 +1,39 @@
+{
+  "roshan_6feat_single_split": {
+    "train_mae": 0.002090785313799687,
+    "train_r2": 0.9764671170486335,
+    "test_mae": 0.01170632835921052,
+    "test_r2": 0.5668330811572984
+  },
+  "roshan_6feat_10fold_on_train": {
+    "test_r2_mean": 0.560750255390913,
+    "test_r2_std": 0.03988494488037125,
+    "test_mae_mean": 0.011812910335579444,
+    "test_mae_std": 0.000489185903003859
+  },
+  "reported_in_slides": {
+    "train_mae": 0.00326,
+    "train_r2": 0.88,
+    "test_mae": 0.0069,
+    "test_r2": 0.863,
+    "test_r2_10fold_mean": 0.85825,
+    "test_r2_10fold_std": 0.01858
+  },
+  "our_14feat_KRR_linear_target": {
+    "test_mae": 0.009691974743486343,
+    "test_r2": 0.6590753806128672
+  },
+  "our_14feat_RF_log_target": {
+    "test_lin_mae": 0.009715170652657538,
+    "test_lin_r2": 0.678951181415776,
+    "test_log_mae": 0.27262393787404615,
+    "test_log_r2": 0.6822768739336723
+  },
+  "protocol_notes": {
+    "features": "Roshan: 6 features (Interlayer, FeFe, NN_min, Lat_Slip, Theta_deg, Psi_deg)",
+    "filter": "J >= 1e-4 eV (yields 597 structures)",
+    "split": "stratified 4:1 train/test (kept fixed)",
+    "KRR_hyperparams": "alpha=0.01, gamma=1.0, RBF",
+    "CV": "10-fold on training set, each fold-model evaluated on fixed test set"
+  }
+}

@@ -1,0 +1,14 @@
+file,rows,description
+full_clean_dataset.csv,808,All cleaned rows
+train_fixed.csv,646,Fixed training set
+test_fixed.csv,162,Fixed test set
+fold_1_train.csv,516,Fold 1 training subset
+fold_1_val.csv,130,Fold 1 validation subset
+fold_2_train.csv,517,Fold 2 training subset
+fold_2_val.csv,129,Fold 2 validation subset
+fold_3_train.csv,517,Fold 3 training subset
+fold_3_val.csv,129,Fold 3 validation subset
+fold_4_train.csv,517,Fold 4 training subset
+fold_4_val.csv,129,Fold 4 validation subset
+fold_5_train.csv,517,Fold 5 training subset
+fold_5_val.csv,129,Fold 5 validation subset

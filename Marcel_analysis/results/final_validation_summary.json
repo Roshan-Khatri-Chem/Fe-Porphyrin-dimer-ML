@@ -1,0 +1,14 @@
+{
+  "log_mae_all_13": 0.8632806942216616,
+  "pearson_r_all_13": 0.3458049361862667,
+  "pearson_p_all_13": 0.24713380496075615,
+  "log_mae_in_dist_distorted": 0.3494221990090599,
+  "pearson_r_in_dist_distorted": 0.8107945757160218,
+  "n_in_dist_distorted": 10,
+  "log_mae_in_dist_only": 0.40103164601616315,
+  "pearson_r_in_dist_only": 0.7819217073594269,
+  "n_in_dist_only": 8,
+  "log_mae_lateral_ood": 2.576142344930333,
+  "within_factor_3": 9,
+  "within_factor_10": 10
+}

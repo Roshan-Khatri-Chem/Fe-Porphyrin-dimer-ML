@@ -1,0 +1,7 @@
+{
+  "n_structures": 111,
+  "srsh_S12_correlation_with_logJ": 0.9388109435584889,
+  "b3lyp_S12_correlation_with_logJ": 0.8349158941096816,
+  "cross_correlation_b3lyp_vs_srsh_abs": 0.8924113942833991,
+  "cross_correlation_b3lyp_vs_srsh_log": 0.2824440734877693
+}

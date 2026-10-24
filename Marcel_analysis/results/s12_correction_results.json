@@ -1,0 +1,12 @@
+{
+  "correction_loo_results": {
+    "rf_b3lyp_geom_log_mae": 0.469,
+    "ridge_b3lyp_only_log_mae": 0.534,
+    "rf_geom_only_log_mae": 0.533
+  },
+  "transfer_to_J": {
+    "raw_b3lyp_r_with_logJ_slater": 0.751,
+    "corrected_r_with_logJ_slater": 0.729,
+    "srsh_truth_r_with_logJ_slater": 0.952
+  }
+}

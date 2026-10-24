@@ -1,0 +1,10 @@
+{
+  "multiplicity": 4,
+  "homo_character": "C+N: 100%, Fe: 0%",
+  "pearson_r_dft": 0.3452334243935822,
+  "cos4phi_retained": 44.55887564688645,
+  "dz_retained": 74.46108866567678,
+  "v2_mae": 0.3055576279594848,
+  "v4_mae": 0.30097146515892015,
+  "s12_importance": 0.49876176453606336
+}

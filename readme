@@ -1,0 +1,67 @@
+# Fe-Porphyrin Dimer Machine Learning Project
+
+This repository contains the dataset, extraction scripts, machine learning models, and workflow routines for predicting electronic coupling ($J$) in Fe-Porphyrin dimer systems (covering both static training sets and MD-generated distorted geometries).
+
+---
+
+## Directory Structure & Workflow Summary
+Fe-Porphyrin-dimer-ML-Roshan/
+├── data/
+├── notebook/
+├── four-model/
+├── Marcel_analysis/
+└── Bradly_MD_data/
+
+---
+
+### 1. `data/`
+Contains the core datasets and raw structures used for feature extraction and machine learning training:
+* **`808_alpha-shift_dataset.csv`**: Main dataset containing extracted features from the 808 PD+MD structures.
+* **`XYZ_file/`**: Directory containing 808 `.xyz` molecular geometries used during model training.
+* **`scripts_to_extract_cdft_coup_and_features/`**: Utility scripts used to parse cDFT coupling values from quantum chemistry output files and compute distance features.
+* **`808_final_features_extract/`**: Merged dataset containing 5 training features (3 angle features: `cos_4phi`, `cos_4psi`, `cos_theta` merged from `master_dataset.csv` alongside the distance features).
+
+---
+
+### 2. `notebook/`
+* **`full-dataset-four-model-coup.ipynb`**: Master Jupyter notebook containing the pipeline for:
+  * Train/test/validation splitting.
+  * Model training and hyperparameter evaluation for Kernel Ridge Regression (KRR), Support Vector Machines (SVM/SVR), and Random Forests (RF).
+  * Generating parity plots.
+  * Predicting electronic coupling across 20,002 MD-generated geometries.
+
+---
+
+### 3. `four-model/`
+Stores model evaluation results, hyperparameter testing, and serialized model files (`.pkl`):
+* **`full-dataset-with-floor-cap/`**:
+  * `parity_2x4_alpha_comparison_4.png`: Parity plots comparing model performance across  shifts ($\alpha$).
+  * **`2.5-10-5-alpha-shift/`**: Model results and data splits for $\alpha = 2.5 \times 10^{-5}\text{ eV}$.
+    * `data-split/`: Train, test, and validation sets.
+    * `model-results-fixed-split/`: CSV summaries of model metrics 
+    * ' model = saved .pkl model when 2.5 \times 10^{-5}\text{ eV}$..
+    * `10-9-alpha-shift/`**: Model results and data splits for $\alpha = 10^{-9}\text{ eV}$.
+    * `data-split/`: Train, test, and validation sets.
+    * `model-results-fixed-split/`: CSV summaries of model metrics and serialized `.pkl` model files.
+    * model = saved .pkl model when alpha shift = 10^{-9}\text{ eV}$..
+---
+
+### 4. `Marcel_analysis/`
+Collaborative codebase containing source routines:
+* **`src/`**: Additional scripts written to extract geometric features from both distorted (MD) and planar dimer geometries.
+
+---
+
+### 5. `Bradly_MD_data/`
+Workflow and pipeline for generating and processing distorted geometries from 20,000 MD frames:
+
+* **`SI/`**: Raw and processed Molecular Dynamics trajectories.
+  * `frameP1_extract/`: Contains extracted trajectory frames generated via VMD:
+    ```bash
+    vmd -dispdev text input.gro centeredP1.xtc -e extract-frame.tcl
+    ```
+* **`process_geom_files_to_xyz.py`**: Python script to clean the 154-atom MD dimer structures into clean 74-atom Fe-Porphyrin core geometries, saved under `P1_xyz_files/`.
+  * *Note:* Uses `../Marcel_analysis/data/processed/reference_monomer.xyz` to align MD extracted dimers consistently with the 808 training set.
+* **`P1_dimer_full_features.csv`**: Extracted features for MD-generated distorted dimers generated via `../Marcel_analysis/src/run_full_feature_pipeline.py`.
+* **Planarization Routine**:
+  * Uses `../Marcel_analysis/src/generate_planar_from_md_tanfunction_features.py` to project MD distorted dimers into ideal planar geometries (saved in `generated_tanfunction_planar/`) to predict couplings using pre-trained ML models.

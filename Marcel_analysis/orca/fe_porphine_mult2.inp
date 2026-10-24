@@ -1,0 +1,11 @@
+# Fe(III) porphine cation — mult=2
+! UKS B3LYP 6-31G* TightSCF NoFrozenCore
+! CPCM(acetonitrile)
+
+%output
+  Print[ P_MOs ] 1
+end
+
+%pal nprocs 4 end
+
+* xyzfile +1 2 clean_monomer.xyz

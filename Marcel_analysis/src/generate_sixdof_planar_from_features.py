@@ -1,0 +1,387 @@
+#!/usr/bin/env python3
+"""Generate a rigid planar dimer from six MD-derived features.
+
+This script uses only six features:
+  - dx, dy, dz
+  - cos(theta)
+  - cos(4*phi)
+  - cos(4*psi)
+These features generated based on script "copy_marcel_analysis/src/run_full_feature_pipeline.py"
+Workflow:
+1. Load a reference monomer from reference_monomer.xyz.
+2. Build a planar dimer with monomer 1 fixed and monomer 2 initially at the origin.
+3. Rotate monomer 2 using a compact Euler-angle construction derived from the MD
+   feature values and translate it by dx, dy, dz.
+4. Write the generated planar dimer as an XYZ file and compare it to the original
+   MD dimer using Kabsch RMSD for monomer 1, monomer 2, and the full dimer.
+
+The recovered angles use the principal branch:
+  theta = arccos(cos_theta)
+  phi   = 0.25 * arccos(cos_4phi)
+  psi   = 0.25 * arccos(cos_4psi)
+
+This keeps the script simple and directly tied to the six requested degrees of freedom.
+python3 src/generate_sixdof_planar_from_features.py \
+  --features-file Bradly_MD_data_July-15/20000-xyz-files/P1_dimer_full_features.csv \
+  --input-dir Bradly_MD_data_July-15/20000-xyz-files/P1_xyz-files \
+  --output-dir data/generated_sixdof_planar \
+  --reference data/processed/reference_monomer.xyz
+"""
+from __future__ import annotations
+
+import argparse
+import csv
+import math
+from pathlib import Path
+from typing import Dict, List, Tuple
+
+import numpy as np
+from ase.io import read as ase_read
+from scipy.optimize import linear_sum_assignment
+
+import sys
+sys.path.append(str(Path(__file__).resolve().parent))
+import geometry
+
+ROOT = Path(__file__).resolve().parent.parent
+REF_PATH = ROOT / "data" / "processed" / "reference_monomer.xyz"
+
+
+def load_reference_monomer(reference_path: Path) -> Tuple[np.ndarray, np.ndarray]:
+    atoms = ase_read(str(reference_path))
+    positions = atoms.get_positions()
+    symbols = np.array(atoms.get_chemical_symbols())
+    return positions, symbols
+
+
+def canonicalize_monomer(positions: np.ndarray, symbols: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    positions = np.asarray(positions, dtype=float)
+    symbols = np.asarray(symbols)
+
+    if np.count_nonzero(symbols == "N") >= 4:
+        centroid, normal, x_axis = geometry.monomer_frame(positions, symbols)
+    else:
+        centroid = positions.mean(axis=0)
+        centered = positions - centroid
+
+        symbol_priority = {symbol: idx for idx, symbol in enumerate(sorted({str(sym) for sym in symbols}))}
+        ordered_indices = sorted(range(len(symbols)), key=lambda idx: (symbol_priority.get(str(symbols[idx]), len(symbol_priority)), str(symbols[idx]), idx))
+
+        anchor_idx = ordered_indices[0]
+        secondary_idx = ordered_indices[1] if len(ordered_indices) > 1 else anchor_idx
+        tertiary_idx = ordered_indices[2] if len(ordered_indices) > 2 else secondary_idx
+
+        x_axis_raw = centered[anchor_idx]
+        x_axis_norm = np.linalg.norm(x_axis_raw)
+        if x_axis_norm < 1e-12:
+            x_axis_raw = centered[secondary_idx]
+            x_axis_norm = np.linalg.norm(x_axis_raw)
+        x_axis = x_axis_raw / x_axis_norm
+
+        normal_raw = np.cross(centered[secondary_idx], centered[tertiary_idx])
+        normal_norm = np.linalg.norm(normal_raw)
+        if normal_norm < 1e-12:
+            _, _, Vt = np.linalg.svd(centered)
+            normal = Vt[-1]
+            x_axis = Vt[0]
+        else:
+            normal = normal_raw / normal_norm
+            normal = normal - np.dot(normal, x_axis) * x_axis
+            normal_norm = np.linalg.norm(normal)
+            if normal_norm < 1e-12:
+                _, _, Vt = np.linalg.svd(centered)
+                normal = Vt[-1]
+                x_axis = Vt[0]
+            else:
+                normal = normal / normal_norm
+
+        y_axis = np.cross(normal, x_axis)
+        orientation = np.stack([x_axis, y_axis, normal], axis=1)
+        if np.linalg.det(orientation) < 0:
+            normal = -normal
+
+    y_axis = np.cross(normal, x_axis)
+    orientation = np.stack([x_axis, y_axis, normal], axis=1)
+    centered = (positions - centroid) @ orientation
+    return centered, symbols
+
+
+def kabsch_rotation(P: np.ndarray, Q: np.ndarray) -> np.ndarray:
+    PC = P - P.mean(axis=0)
+    QC = Q - Q.mean(axis=0)
+    H = PC.T @ QC
+    U, _, Vt = np.linalg.svd(H)
+    d = np.linalg.det(U @ Vt)
+    M = np.diag([1.0, 1.0, np.sign(d)])
+    return U @ M @ Vt
+
+
+def align_and_reorder_monomer(
+    md_pos: np.ndarray,
+    md_sym: np.ndarray,
+    ref_pos: np.ndarray,
+    ref_sym: np.ndarray,
+) -> np.ndarray:
+    md_canonical, md_symbols = canonicalize_monomer(md_pos, md_sym)
+    ref_canonical, ref_symbols = canonicalize_monomer(ref_pos, ref_sym)
+
+    n_atoms = len(ref_pos)
+    cost_matrix = np.full((n_atoms, n_atoms), 1e9)
+    for i in range(n_atoms):
+        for j in range(n_atoms):
+            if ref_symbols[i] == md_symbols[j]:
+                cost_matrix[i, j] = np.linalg.norm(ref_canonical[i] - md_canonical[j])
+
+    row_ind, col_ind = linear_sum_assignment(cost_matrix)
+    return col_ind
+
+
+def normalize_monomer_to_reference(
+    positions: np.ndarray,
+    symbols: np.ndarray,
+    reference_positions: np.ndarray,
+    reference_symbols: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray]:
+    canonical_pos, canonical_sym = canonicalize_monomer(positions, symbols)
+    ref_canonical_pos, ref_canonical_sym = canonicalize_monomer(reference_positions, reference_symbols)
+    perm = align_and_reorder_monomer(canonical_pos, canonical_sym, ref_canonical_pos, ref_canonical_sym)
+    return canonical_pos[perm], canonical_sym[perm]
+
+
+def rotation_z(angle: float) -> np.ndarray:
+    c = math.cos(angle)
+    s = math.sin(angle)
+    return np.array([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]], dtype=float)
+
+
+def rotation_y(angle: float) -> np.ndarray:
+    c = math.cos(angle)
+    s = math.sin(angle)
+    return np.array([[c, 0.0, s], [0.0, 1.0, 0.0], [-s, 0.0, c]], dtype=float)
+
+
+def build_rigid_planar_dimer(
+    mono_pos: np.ndarray,
+    mono_sym: np.ndarray,
+    dx: float,
+    dy: float,
+    dz: float,
+    theta: float,
+    psi: float,
+    phi: float,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    m1_pos = mono_pos.copy()
+    m1_sym = mono_sym
+
+    R = rotation_z(phi) @ rotation_y(theta) @ rotation_z(psi)
+    m2_pos = mono_pos.copy()
+    m2_pos = m2_pos @ R.T
+    m2_pos = m2_pos + np.array([dx, dy, dz], dtype=float)
+    m2_sym = mono_sym
+    return m1_pos, m1_sym, m2_pos, m2_sym
+
+
+def load_features(features_file: Path) -> Dict[str, Dict[str, str]]:
+    with features_file.open("r", newline="") as handle:
+        reader = csv.DictReader(handle)
+        result: Dict[str, Dict[str, str]] = {}
+        for row in reader:
+            key = (
+                row.get("Filename")
+                or row.get("filename")
+                or row.get("Name")
+                or row.get("name")
+                or ""
+            ).strip()
+            if key.endswith(".xyz"):
+                key = Path(key).stem
+            result[key] = row
+    return result
+
+
+def parse_float(value: str | None, default: float = float("nan")) -> float:
+    if value is None or value == "":
+        return default
+    return float(value)
+
+
+def write_xyz(path: Path, m1_pos: np.ndarray, m1_sym: np.ndarray, m2_pos: np.ndarray, m2_sym: np.ndarray, comment: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    all_pos = np.vstack([m1_pos, m2_pos])
+    all_sym = np.concatenate([m1_sym, m2_sym])
+    with path.open("w") as handle:
+        handle.write(f"{len(all_sym)}\n")
+        handle.write(comment + "\n")
+        for symbol, (x, y, z) in zip(all_sym, all_pos):
+            handle.write(f"{symbol:2s}  {x:12.6f}  {y:12.6f}  {z:12.6f}\n")
+
+
+def kabsch_rmsd(P: np.ndarray, Q: np.ndarray) -> float:
+    P = np.asarray(P, dtype=float)
+    Q = np.asarray(Q, dtype=float)
+    PC = P - P.mean(axis=0)
+    QC = Q - Q.mean(axis=0)
+    H = PC.T @ QC
+    U, _, Vt = np.linalg.svd(H)
+    d = np.linalg.det(Vt.T @ U.T)
+    M = np.diag([1.0, 1.0, np.sign(d)])
+    R = Vt.T @ M @ U.T
+    P_rot = (R @ PC.T).T
+    return float(np.sqrt(np.mean(np.sum((P_rot - QC) ** 2, axis=1))))
+
+
+def compute_com_distance_error(m1_pos: np.ndarray, m2_pos: np.ndarray, md_m1_pos: np.ndarray, md_m2_pos: np.ndarray) -> float:
+    planar_com_1 = np.mean(np.asarray(m1_pos, dtype=float), axis=0)
+    planar_com_2 = np.mean(np.asarray(m2_pos, dtype=float), axis=0)
+    md_com_1 = np.mean(np.asarray(md_m1_pos, dtype=float), axis=0)
+    md_com_2 = np.mean(np.asarray(md_m2_pos, dtype=float), axis=0)
+
+    planar_distance = np.linalg.norm(planar_com_2 - planar_com_1)
+    md_distance = np.linalg.norm(md_com_2 - md_com_1)
+    return float(abs(planar_distance - md_distance))
+
+
+def rmsd_for_monomers(m1_a: np.ndarray, sym_a: np.ndarray, m1_b: np.ndarray, sym_b: np.ndarray) -> float:
+    if len(sym_a) != len(sym_b):
+        raise ValueError("Monomers must have the same atom count")
+
+    if not np.array_equal(np.sort(sym_a), np.sort(sym_b)):
+        raise ValueError("Monomer symbol sets do not match")
+
+    if not np.array_equal(sym_a, sym_b):
+        perm = align_and_reorder_monomer(m1_b, sym_b, m1_a, sym_a)
+        m1_b = m1_b[perm]
+        sym_b = sym_b[perm]
+
+    return kabsch_rmsd(m1_a, m1_b)
+
+
+def recover_angles(row: Dict[str, str]) -> Tuple[float, float, float]:
+    cos_theta = parse_float(row.get("cos_theta") or row.get("cosThet"), default=1.0)
+    cos_4phi = parse_float(row.get("cos_4phi") or row.get("cos4phi") or row.get("cos4_phi"), default=1.0)
+    cos_4psi = parse_float(row.get("cos_4psi") or row.get("cos4psi") or row.get("cos4_psi"), default=1.0)
+
+    theta = math.acos(np.clip(cos_theta, -1.0, 1.0))
+    #phi = 0.25 * math.acos(np.clip(cos_4phi, -1.0, 1.0))
+    #psi = 0.25 * math.acos(np.clip(cos_4psi, -1.0, 1.0))
+    phi = 0.25 * math.acos(np.clip(cos_4phi, -1.0, 1.0))
+    psi = 0.25 * math.acos(np.clip(cos_4psi, -1.0, 1.0))
+    return theta, phi, psi
+ # --- In-plane twist φ ---
+    # x2_proj = x2 - np.dot(x2, n1) * n1
+    # norm_x2_proj = np.linalg.norm(x2_proj)
+    # if norm_x2_proj > 1e-6:
+    #     x2_proj /= norm_x2_proj
+    #     cos_phi = np.clip(np.dot(x2_proj, x1), -1.0, 1.0)
+    #     sin_phi = np.dot(x2_proj, y1)
+    #     phi = np.arctan2(sin_phi, cos_phi)
+    # else:
+    #     phi = 0.0
+    # cos_4phi = np.cos(4.0 * phi)
+    # sin_4phi = np.sin(4.0 * phi)
+
+def build_comment(row: Dict[str, str]) -> str:
+    values = {
+        "dx": row.get("dx", "nan"),
+        "dy": row.get("dy", "nan"),
+        "dz": row.get("dz", "nan"),
+        "cos_theta": row.get("cos_theta", "nan"),
+        "cos_4phi": row.get("cos_4phi", "nan"),
+        "cos_4psi": row.get("cos_4psi", "nan"),
+    }
+    return " ".join(f"{k}={v}" for k, v in values.items())
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--features-file", required=True, type=Path, help="CSV file with dx/dy/dz/cos_theta/cos_4phi/cos_4psi")
+    parser.add_argument("--input-dir", required=True, type=Path, help="Folder with original MD XYZ files")
+    parser.add_argument("--output-dir", default=ROOT / "data" / "generated_sixdof_planar", type=Path)
+    parser.add_argument("--reference", default=REF_PATH, type=Path, help="Reference monomer XYZ")
+    args = parser.parse_args()
+
+    features_file = args.features_file.expanduser().resolve()
+    input_dir = args.input_dir.expanduser().resolve()
+    output_dir = args.output_dir.expanduser().resolve()
+    reference_path = args.reference.expanduser().resolve()
+
+    if not features_file.exists():
+        raise FileNotFoundError(f"Features file not found: {features_file}")
+    if not input_dir.exists():
+        raise FileNotFoundError(f"Input directory not found: {input_dir}")
+    if not reference_path.exists():
+        raise FileNotFoundError(f"Reference monomer not found: {reference_path}")
+
+    ref_positions, ref_symbols = load_reference_monomer(reference_path)
+    ref_mono_pos, ref_mono_sym = canonicalize_monomer(ref_positions, ref_symbols)
+    features = load_features(features_file)
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    summary_rows: List[Dict[str, str]] = []
+
+    for xyz_path in sorted(input_dir.glob("*.xyz")):
+        stem = xyz_path.stem
+        row = features.get(stem)
+        if row is None:
+            print(f"Skipping {xyz_path.name}: no feature row")
+            continue
+
+        dx = parse_float(row.get("dx"), default=float("nan"))
+        dy = parse_float(row.get("dy"), default=float("nan"))
+        dz = parse_float(row.get("dz"), default=float("nan"))
+
+        theta, phi, psi = recover_angles(row)
+
+        m1_pos, m1_sym, m2_pos, m2_sym = build_rigid_planar_dimer(
+            ref_mono_pos, ref_mono_sym, dx, dy, dz, theta, psi, phi
+        )
+
+        out_path = output_dir / f"{stem}_planar.xyz"
+        write_xyz(out_path, m1_pos, m1_sym, m2_pos, m2_sym, build_comment(row))
+
+        source_dimer = geometry.load_dimer_xyz(str(xyz_path))
+        md_m1 = source_dimer["monomer1"]["positions"]
+        md_m2 = source_dimer["monomer2"]["positions"]
+        md_sym1 = source_dimer["monomer1"]["symbols"]
+        md_sym2 = source_dimer["monomer2"]["symbols"]
+
+        md_m1_norm, md_sym1_norm = normalize_monomer_to_reference(md_m1, md_sym1, ref_positions, ref_symbols)
+        md_m2_norm, md_sym2_norm = normalize_monomer_to_reference(md_m2, md_sym2, ref_positions, ref_symbols)
+
+        rmsd_m1 = rmsd_for_monomers(m1_pos, m1_sym, md_m1_norm, md_sym1_norm)
+        rmsd_m2 = rmsd_for_monomers(m2_pos, m2_sym, md_m2_norm, md_sym2_norm)
+        all_pos_gen = np.vstack([m1_pos, m2_pos])
+        all_pos_md = np.vstack([md_m1, md_m2])
+        dimer_rmsd = kabsch_rmsd(all_pos_gen, all_pos_md)
+        com_distance_error = compute_com_distance_error(m1_pos, m2_pos, md_m1, md_m2)
+
+        summary_rows.append(
+            {
+                "Filename": stem,
+                "dx": str(dx),
+                "dy": str(dy),
+                "dz": str(dz),
+                "cos_theta": str(parse_float(row.get("cos_theta") or row.get("cosThet"), default=float("nan"))),
+                "cos_4phi": str(parse_float(row.get("cos_4phi") or row.get("cos4phi") or row.get("cos4_phi"), default=float("nan"))),
+                "cos_4psi": str(parse_float(row.get("cos_4psi") or row.get("cos4psi") or row.get("cos4_psi"), default=float("nan"))),
+                "rmsd_m1": f"{rmsd_m1:.6f}",
+                "rmsd_m2": f"{rmsd_m2:.6f}",
+                "rmsd_dimer": f"{dimer_rmsd:.6f}",
+                "com_distance_error": f"{com_distance_error:.6f}",
+            }
+        )
+        print(f"{stem}: monomer1 RMSD={rmsd_m1:.6f}, monomer2 RMSD={rmsd_m2:.6f}, dimer RMSD={dimer_rmsd:.6f}, COM distance error={com_distance_error:.6f}")
+
+    summary_file = output_dir / "rmsd_summary.csv"
+    with summary_file.open("w", newline="") as handle:
+        fieldnames = ["Filename", "dx", "dy", "dz", "cos_theta", "cos_4phi", "cos_4psi", "rmsd_m1", "rmsd_m2", "rmsd_dimer", "com_distance_error"]
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(summary_rows)
+
+    print(f"Wrote {len(summary_rows)} generated planar dimers to {output_dir}")
+    print(f"Summary written to {summary_file}")
+
+
+if __name__ == "__main__":
+    main()

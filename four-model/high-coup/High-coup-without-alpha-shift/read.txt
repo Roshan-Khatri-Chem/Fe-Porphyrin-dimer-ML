@@ -1,0 +1,2 @@
+I have used two different ways for high coupling training. one including alpha_shfit with coupling_meV+alpha_shift  andanother without alpha_shfit only Coupling_meV dataset. and compare the effect of alpha_shfit 
+This is without alpha shift dataset

@@ -1,0 +1,1 @@
+#This scripts reads Coupling_eV and computes log10_coupling without any alpha shift. It then splits the data into train/test and creates 5-fold cross-validation splits for the training set. The resulting datasets are saved to CSV files for further analysis.

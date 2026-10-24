@@ -1,0 +1,5 @@
+Model,Parity_Plot_Path
+KRR,../four-model/model-results-fixed-split/parity-plots-mev/KRR_fixed_split_parity_meV.png
+SVM,../four-model/model-results-fixed-split/parity-plots-mev/SVM_fixed_split_parity_meV.png
+RF,../four-model/model-results-fixed-split/parity-plots-mev/RF_fixed_split_parity_meV.png
+XGB,../four-model/model-results-fixed-split/parity-plots-mev/XGB_fixed_split_parity_meV.png

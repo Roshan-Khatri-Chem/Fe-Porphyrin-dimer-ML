@@ -1,0 +1,7 @@
+this MD traj results are based on 2.5x10-5 alpha trained model
+sub_eV_MD_traj_results folder included the alpha subtracted from the log10_pred 
+this is the original code that was commented out, but it seems to be the correct way to compute the predicted coupling in eV and meV
+        # pred_eV = np.maximum((10.0 ** pred_log10) - model_alpha, 0.0)
+        # pred_meV = pred_eV * 1000.0
+
+but MD_traj_result folder has unsubtracted alpha to meV. Which is similar to the Test.train R2 and MAE report.

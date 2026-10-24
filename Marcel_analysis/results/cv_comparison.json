@@ -1,0 +1,23 @@
+{
+  "KRR": {
+    "cv_log_mae": 0.382571728121514,
+    "best_params": {
+      "krr__alpha": "0.1",
+      "krr__gamma": "0.05"
+    }
+  },
+  "GPR": {
+    "cv_log_mae": 0.5497628178733038,
+    "kernel": "Matern",
+    "log_likelihood": -447.2795603757927
+  },
+  "RF": {
+    "cv_log_mae": 0.3712994974396417,
+    "best_params": {
+      "rf__n_estimators": "500",
+      "rf__min_samples_leaf": "1",
+      "rf__max_features": "0.5",
+      "rf__max_depth": "20"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+Model,Fold,Train_MAE,Train_R2,Val_MAE,Val_R2,Test_MAE,Test_R2,Best_Params
+KRR,1,0.34928568605232685,0.7497756361830346,0.4752477651599325,0.5211366458755338,0.43587727030960766,0.5658353087807657,"{'regressor__model__alpha': np.float64(1.0), 'regressor__model__gamma': np.float64(1.0), 'regressor__model__kernel': 'rbf'}"
+KRR,2,0.3465048841673326,0.7472454175836124,0.4673454889886999,0.48659973905554954,0.4157235527747179,0.5568492072772884,"{'regressor__model__alpha': np.float64(1.0), 'regressor__model__gamma': np.float64(1.0), 'regressor__model__kernel': 'rbf'}"
+KRR,3,0.3521411343795666,0.742601581423832,0.43778515036000487,0.5016306651639576,0.4396800764961487,0.5254677704117692,"{'regressor__model__alpha': np.float64(1.0), 'regressor__model__gamma': np.float64(1.0), 'regressor__model__kernel': 'rbf'}"
+KRR,4,0.3389936068555917,0.765661930943363,0.5009371271476684,0.4057307003172428,0.4273922234228807,0.5747290578619035,"{'regressor__model__alpha': np.float64(1.0), 'regressor__model__gamma': np.float64(1.0), 'regressor__model__kernel': 'rbf'}"
+KRR,5,0.34852289028101363,0.7488117112866615,0.48301289500336625,0.5143074369687866,0.4387876206198107,0.5518899099873035,"{'regressor__model__alpha': np.float64(1.0), 'regressor__model__gamma': np.float64(1.0), 'regressor__model__kernel': 'rbf'}"

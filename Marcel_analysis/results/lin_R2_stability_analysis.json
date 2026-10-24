@@ -1,0 +1,12 @@
+{
+  "reproducing_original_R2": {
+    "in_sample_pooled_lin_R2": 0.886,
+    "random_split_mean_lin_R2": 0.363,
+    "random_split_std_lin_R2": 0.482,
+    "random_split_max_lin_R2": 0.954,
+    "random_split_min_lin_R2": -0.504,
+    "training_set_in_sample_lin_R2": 0.993,
+    "fixed_stratified_test_lin_R2": 0.601
+  },
+  "note": "Linear R^2 on this dataset is unstable to the choice of split because the coupling distribution is heavy-tailed. The original 0.863 is consistent with either an in-sample evaluation or a favorable random split."
+}

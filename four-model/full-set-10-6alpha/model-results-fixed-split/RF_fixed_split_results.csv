@@ -1,0 +1,6 @@
+Model,Fold,Train_MAE,Train_R2,Val_MAE,Val_R2,Test_MAE,Test_R2,Best_Params
+RF,1,0.25118245016238777,0.9130922274799382,0.6230187387206743,0.476877015930691,0.5338631664677038,0.5828390626800771,"{'regressor__max_depth': None, 'regressor__min_samples_leaf': 1, 'regressor__min_samples_split': 4, 'regressor__n_estimators': 800}"
+RF,2,0.2527938972550482,0.9146898233798292,0.5981552133551206,0.5062869167756332,0.5328000273141218,0.6249779520198289,"{'regressor__max_depth': None, 'regressor__min_samples_leaf': 1, 'regressor__min_samples_split': 4, 'regressor__n_estimators': 800}"
+RF,3,0.2488691809580967,0.9146012145655634,0.6089348595965779,0.5095451507241777,0.5491586839818998,0.588446591922442,"{'regressor__max_depth': None, 'regressor__min_samples_leaf': 1, 'regressor__min_samples_split': 4, 'regressor__n_estimators': 800}"
+RF,4,0.24772349243484962,0.9149065061065577,0.5591556004096233,0.5307088046869405,0.5166783034766418,0.6110858432871027,"{'regressor__max_depth': None, 'regressor__min_samples_leaf': 1, 'regressor__min_samples_split': 4, 'regressor__n_estimators': 800}"
+RF,5,0.25933476192878924,0.9088377045471557,0.5438855308387461,0.6132249862123453,0.5212143559697402,0.6125736809434301,"{'regressor__max_depth': None, 'regressor__min_samples_leaf': 1, 'regressor__min_samples_split': 4, 'regressor__n_estimators': 800}"

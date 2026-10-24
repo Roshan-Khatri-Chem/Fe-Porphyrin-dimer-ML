@@ -1,0 +1,5 @@
+Model,Axis_Start_meV,Axis_End_meV,Parity_Plot_Path
+KRR,1e-06,100.0,../four-model/full-dataset-with-floor-cap/model-results-fixed-split/parity-plots-mev/KRR_fixed_split_parity_meV.png
+SVM,1e-06,100.0,../four-model/full-dataset-with-floor-cap/model-results-fixed-split/parity-plots-mev/SVM_fixed_split_parity_meV.png
+RF,1e-06,100.0,../four-model/full-dataset-with-floor-cap/model-results-fixed-split/parity-plots-mev/RF_fixed_split_parity_meV.png
+XGB,1e-06,100.0,../four-model/full-dataset-with-floor-cap/model-results-fixed-split/parity-plots-mev/XGB_fixed_split_parity_meV.png

@@ -1,0 +1,5 @@
+Model,Train_MAE_log10,Train_R2_log10,Test_MAE_log10,Test_R2_log10,Parity_Plot_Path
+KRR,0.46304382891215184,0.6543458218353742,0.8271060762934528,-0.016393649419753853,../four-model/high-coup/model-results-fixed-split/parity-plots-log10-space/KRR_fixed_split_parity_log10.png
+SVM,0.3974398840060262,0.6209060872223944,0.7778953951579289,0.10050868490510578,../four-model/high-coup/model-results-fixed-split/parity-plots-log10-space/SVM_fixed_split_parity_log10.png
+RF,0.262639536365273,0.8940444307926423,0.698583573853074,0.27782360074107093,../four-model/high-coup/model-results-fixed-split/parity-plots-log10-space/RF_fixed_split_parity_log10.png
+XGB,0.14889727796469523,0.9642538056560452,0.7062064440250266,0.21781396603115566,../four-model/high-coup/model-results-fixed-split/parity-plots-log10-space/XGB_fixed_split_parity_log10.png

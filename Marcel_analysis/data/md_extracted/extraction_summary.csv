@@ -1,0 +1,16 @@
+conf_id,status,n_atoms_m1,n_atoms_m2,fe_fe_dist_ang,xyz_path
+1,OK,98,98,6.486933019540126,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_01.xyz
+2,OK,98,98,4.717827890035835,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_02.xyz
+3,OK,98,98,5.93931814268271,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_03.xyz
+4,OK,98,98,6.469010743537219,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_04.xyz
+5,OK,98,98,6.222370930762644,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_05.xyz
+6,OK,98,98,6.59396693955922,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_06.xyz
+7,OK,98,98,6.029179048593602,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_07.xyz
+8,OK,98,98,6.4510619280859505,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_08.xyz
+9,OK,98,98,5.832066529112986,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_09.xyz
+10,OK,98,98,7.507955780370581,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_10.xyz
+11,OK,98,98,11.125601107355951,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_11.xyz
+12,OK,98,98,6.7356514161586505,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_12.xyz
+13,OK,98,98,10.426969837877158,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_13.xyz
+14,OK,98,98,5.524671935961444,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_14.xyz
+15,OK,98,98,7.058703847024613,/Users/mbaer/Projects/ML_for_coupling/porphyrin_coupling/src/../data/md_extracted/conf_15.xyz

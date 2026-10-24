@@ -1,0 +1,8 @@
+# Fe(III) porphine cation — mult=4, gas phase
+! UKS B3LYP 6-31G* TightSCF
+
+%output
+  Print[ P_MOs ] 1
+end
+
+* xyzfile +1 4 clean_monomer.xyz

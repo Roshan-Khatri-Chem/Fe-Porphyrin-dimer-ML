@@ -1,0 +1,14 @@
+{
+  "best_2d_config": {
+    "cos_theta_min": 0.95,
+    "dz_max": 4.5,
+    "cos4phi_min": 0.3,
+    "tolerance": 0.5
+  },
+  "2d_fp_rate_704": null,
+  "md_2d": {
+    "mae_all": 1.9008505393314425,
+    "mae_id": 1.6982629976517756,
+    "r_id": -0.09694884004389401
+  }
+}

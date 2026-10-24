@@ -1,0 +1,17 @@
+{
+  "log_mae_vs_gamma_star_N13": 0.8632806942216616,
+  "log_mae_vs_gamma_star_clean": 1.4316038557768451,
+  "n_clean": 6,
+  "excluded_distortion_confs": [
+    1,
+    3,
+    4,
+    5,
+    8,
+    11,
+    14
+  ],
+  "pearson_r": 0.3458049361862667,
+  "pearson_p": 0.24713380496075615,
+  "mean_signed_log_ratio": 0.689961385579126
+}
