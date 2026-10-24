@@ -3,3 +3,5 @@ __pycache__/
 *.pkl
 *.xtc
 *.gro
+Bradly_MD_data/SI/COLVAR
+Bradly_MD_data/SI/HILLS_d
